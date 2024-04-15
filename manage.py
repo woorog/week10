@@ -1,56 +1,48 @@
-import copy
 import sys
+from collections import deque
 
-y,x,tc=map(int,sys.stdin.readline().split())
+top, a, b = map(int, sys.stdin.readline().split())
 
+lists = set()
+lists.add((0, a))
+lists.add((0, b))
+q = deque()
+q.append((0, a))
+q.append((0, b))
+max = 0
 
+while q:
+    water, now = q.popleft()
+    if now == top:
+        max = top
+        break
+    elif now > top:
+        continue
+    else:
+        if max < now:
+            max = now
 
-board=[]
-for _ in range(y):
-    board.append(list(map(int,sys.stdin.readline().split())))
+    if water == 0:
+        plemon = (0, now + a)
+        porange = (0, now + b)
+        drink = (1, int(now / 2))
+        if plemon not in lists:
+            q.append(plemon)
+            lists.add(plemon)
+        if porange not in lists:
+            q.append(porange)
+            lists.add(porange)
+        if drink not in lists:
+            q.append(drink)
+            lists.add(drink)
+    else:
+        plemon = (1, now + a)
+        porange = (1, now + b)
+        if plemon not in lists:
+            q.append(plemon)
+            lists.add(plemon)
+        if porange not in lists:
+            q.append(porange)
+            lists.add(porange)
 
-for _ in range(tc):
-    r,c,s=map(int,sys.stdin.readline().split())
-
-    cnt=0
-
-    while 2*s-2*cnt>=1:
-        cb=copy.deepcopy(board)
-        sx=c-s+cnt-1
-        ex=c+s-cnt-1
-        sy=r-s+cnt-1
-        ey=r+s-cnt-1
-
-        print(sx,ex,sy,ey)
-        temp=board[sy+1][sx]
-
-        for i in range(sx,ex):
-            cb[sy][i]=temp
-            temp=board[sy][i]
-
-        for i in range(sy,ey):
-            cb[i][ex]=temp
-            temp=board[i][ex]
-
-
-        for i in range(ex,sx,-1):
-            cb[ey][i]=temp
-            temp=board[ey][i]
-
-        for i in range(ey,sy,-1):
-            cb[i][sx]=temp
-            temp=board[i][sx]
-
-
-        # for i in range(y):
-        #     print(cb[i])
-
-        cnt+=1
-        board=cb
-
-ans=sum(board[0])
-for i in range(y):
-    if sum(board[i])<ans:
-        ans=sum(board[i])
-
-print(ans)
+print(max)
